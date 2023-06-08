@@ -11,9 +11,9 @@ type App struct {
 }
 
 func (a *App) initControllers(controllers []ControllerInterface) {
-	// a.App.Group("/api")
+	api := a.App.Group("/api")
 	for _, controller := range controllers {
-		controller.initRouter(a.App)
+		controller.initRouter(api)
 	}
 }
 

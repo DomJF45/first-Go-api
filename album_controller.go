@@ -12,7 +12,7 @@ type Controller struct {
 	Path string
 }
 
-func (c Controller) initRouter(route *gin.Engine) {
+func (c Controller) initRouter(route *gin.RouterGroup) {
 	route.GET(c.Path, getAll)
 	route.GET(c.Path+"/:id", getById)
 	route.POST(c.Path, postAlbum)
