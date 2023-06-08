@@ -9,24 +9,20 @@ import (
 )
 
 type Controller struct {
-	Router *gin.Engine
+	Path string
 }
 
-func (c *Controller) initRouter() {
-	c.Router.GET("/albums", getAll)
-	c.Router.GET("/albums/:id", getById)
-	c.Router.POST("/albums", postAlbum)
-	c.Router.DELETE("/albums/:id", deleteAlbum)
-	c.Router.PUT("/albums/:id", updateAlbum)
+func (c Controller) initRouter(route *gin.Engine) {
+	route.GET(c.Path, getAll)
+	route.GET(c.Path+"/:id", getById)
+	route.POST(c.Path, postAlbum)
+	route.DELETE(c.Path+"/:id", deleteAlbum)
+	route.PUT(c.Path+"/:id", updateAlbum)
 }
 
-func (c *Controller) run() {
-	c.Router.Run("localhost:8080")
-}
-
-func newController() Controller {
+func newAlbumController() Controller {
 	albumController := Controller{
-		Router: gin.Default(),
+		Path: "/albums",
 	}
 	return albumController
 }

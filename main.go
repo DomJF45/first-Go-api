@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"time"
 
 	"github.com/go-sql-driver/mysql"
 	"github.com/joho/godotenv"
@@ -17,6 +18,15 @@ type Album struct {
 	Title  string  `json:"title"`
 	Artist string  `json:"artist"`
 	Price  float32 `json:"price"`
+}
+
+type User struct {
+	ID           int64     `json:"id"`
+	Name         string    `json:"name"`
+	Email        string    `json:"email"`
+	Password     string    `json:"password"`
+	RegisteredAt time.Time `json:"registeredAt"`
+	LastLogin    time.Time `json:"lastLogin"`
 }
 
 func main() {
@@ -34,7 +44,7 @@ func main() {
 		DBName: "recordings",
 	}
 
-	//get db handle
+	// get db handle
 	var err error
 	db, err = sql.Open("mysql", cfg.FormatDSN())
 	if err != nil {
@@ -49,7 +59,10 @@ func main() {
 	fmt.Println("Connected!")
 
 	// load and init controller
-	albumController := newController()
-	albumController.initRouter()
-	albumController.run()
+	albumController := newAlbumController()
+	controllers := []ControllerInterface{
+		albumController,
+	}
+	app := newApp(controllers, "localhost:8080")
+	app.run()
 }
