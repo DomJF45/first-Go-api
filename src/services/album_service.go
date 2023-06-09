@@ -1,14 +1,19 @@
-package main
+package services
 
 import (
 	"database/sql"
 	"fmt"
+
+	"github.com/web-service-gin/src/interfaces"
+	"github.com/web-service-gin/src/util"
 )
 
-func albumsByArtist(name string) ([]Album, error) {
+type Album interfaces.Album
+
+func AlbumsByArtist(name string) ([]Album, error) {
 	var albums []Album
 
-	rows, err := db.Query("SELECT * FROM album WHERE artist = ?", name)
+	rows, err := util.DB.Query("SELECT * FROM album WHERE artist = ?", name)
 	if err != nil {
 		return nil, fmt.Errorf("albumsByArtist %q: %v", name, err)
 	}
@@ -27,10 +32,10 @@ func albumsByArtist(name string) ([]Album, error) {
 	return albums, nil
 }
 
-func allAlbums() ([]Album, error) {
+func AllAlbums() ([]Album, error) {
 	var albs []Album
 
-	rows, err := db.Query("SELECT * FROM album")
+	rows, err := util.DB.Query("SELECT * FROM album")
 	if err != nil {
 		return albs, fmt.Errorf("failed to query albums %v", err)
 	}
@@ -51,10 +56,10 @@ func allAlbums() ([]Album, error) {
 	return albs, nil
 }
 
-func albumById(id int64) (Album, error) {
+func AlbumById(id int64) (Album, error) {
 	var alb Album
 
-	row := db.QueryRow("SELECT * FROM album WHERE id = ?", id)
+	row := util.DB.QueryRow("SELECT * FROM album WHERE id = ?", id)
 
 	if err := row.Scan(&alb.ID, &alb.Title, &alb.Artist, &alb.Price); err != nil {
 		if err == sql.ErrNoRows {
@@ -65,8 +70,8 @@ func albumById(id int64) (Album, error) {
 	return alb, nil
 }
 
-func addAlbum(alb Album) (int64, error) {
-	result, err := db.Exec("INSERT INTO album (title, artist, price) VALUES (?, ?, ?)", alb.Title, alb.Artist, alb.Price)
+func AddAlbum(alb Album) (int64, error) {
+	result, err := util.DB.Exec("INSERT INTO album (title, artist, price) VALUES (?, ?, ?)", alb.Title, alb.Artist, alb.Price)
 	if err != nil {
 		return 0, fmt.Errorf("addAlbum: %v", err)
 	}
@@ -79,8 +84,8 @@ func addAlbum(alb Album) (int64, error) {
 	return id, nil
 }
 
-func removeAlbum(id int64) (int64, error) {
-	result, err := db.Exec("DELETE FROM album WHERE id = ?", id)
+func RemoveAlbum(id int64) (int64, error) {
+	result, err := util.DB.Exec("DELETE FROM album WHERE id = ?", id)
 	if err != nil {
 		return 0, fmt.Errorf("deleteAlbum: %d, %v", id, err)
 	}
@@ -93,8 +98,8 @@ func removeAlbum(id int64) (int64, error) {
 	return deletedId, nil
 }
 
-func alterAlbum(price float32, id int64) (int64, error) {
-	result, err := db.Exec("UPDATE album SET price = ? where id = ?", price, id)
+func AlterAlbum(price float32, id int64) (int64, error) {
+	result, err := util.DB.Exec("UPDATE album SET price = ? where id = ?", price, id)
 	if err != nil {
 		return 0, fmt.Errorf("update album %d: %v", id, price)
 	}

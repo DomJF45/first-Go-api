@@ -1,4 +1,4 @@
-package main
+package controllers
 
 import (
 	"log"
@@ -6,13 +6,22 @@ import (
 	"strconv"
 
 	"github.com/gin-gonic/gin"
+
+	"github.com/web-service-gin/src/services"
 )
 
-type Controller struct {
+type AlbumController struct {
 	Path string
 }
 
-func (c Controller) initRouter(route *gin.RouterGroup) {
+func NewAlbumController() AlbumController {
+	albumController := AlbumController{
+		Path: "/albums",
+	}
+	return albumController
+}
+
+func (c AlbumController) InitRouter(route *gin.RouterGroup) {
 	route.GET(c.Path, getAll)
 	route.GET(c.Path+"/:id", getById)
 	route.POST(c.Path, postAlbum)
@@ -20,16 +29,9 @@ func (c Controller) initRouter(route *gin.RouterGroup) {
 	route.PUT(c.Path+"/:id", updateAlbum)
 }
 
-func newAlbumController() Controller {
-	albumController := Controller{
-		Path: "/albums",
-	}
-	return albumController
-}
-
 func getAll(c *gin.Context) {
-	var albs []Album
-	res, err := allAlbums()
+	var albs []services.Album
+	res, err := services.AllAlbums()
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -40,12 +42,12 @@ func getAll(c *gin.Context) {
 }
 
 func getById(c *gin.Context) {
-	var newAlbum Album
+	var newAlbum services.Album
 
 	n, err := strconv.ParseInt(c.Param("id"), 10, 64)
 
 	if err == nil {
-		newAlbum, err = albumById(n)
+		newAlbum, err = services.AlbumById(n)
 
 		if err != nil {
 			log.Fatal(err)
@@ -56,13 +58,13 @@ func getById(c *gin.Context) {
 }
 
 func postAlbum(c *gin.Context) {
-	var newAlbum Album
+	var newAlbum services.Album
 
 	if err := c.BindJSON(&newAlbum); err != nil {
 		log.Fatal(err)
 	}
 
-	res, err := addAlbum(newAlbum)
+	res, err := services.AddAlbum(newAlbum)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -76,7 +78,7 @@ func deleteAlbum(c *gin.Context) {
 		log.Fatal(err)
 	}
 
-	res, err := removeAlbum(id)
+	res, err := services.RemoveAlbum(id)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -90,13 +92,13 @@ func updateAlbum(c *gin.Context) {
 		log.Fatal(err)
 	}
 
-	var album Album
+	var album services.Album
 
 	if err := c.BindJSON(&album); err != nil {
 		log.Fatal(err)
 	}
 
-	res, err := alterAlbum(album.Price, id)
+	res, err := services.AlterAlbum(album.Price, id)
 	if err != nil {
 		log.Fatal(err)
 	}
