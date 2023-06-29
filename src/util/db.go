@@ -22,19 +22,24 @@ func ConnectDb() {
 	}
 	// load sql config
 	cfg := mysql.Config{
-		User:   os.Getenv("DB_USER"),
-		Passwd: os.Getenv("DB_PASSWORD"),
-		Net:    "tcp",
-		Addr:   "127.0.0.1:3306",
-		DBName: "recordings",
+		User:      os.Getenv("DB_USER"),
+		Passwd:    os.Getenv("DB_PASSWORD"),
+		Net:       "tcp",
+		Addr:      "127.0.0.1:3306",
+		DBName:    "recordings",
+		ParseTime: true,
 	}
 	DB, err = sql.Open("mysql", cfg.FormatDSN())
 	if err != nil {
 		log.Fatal(err)
 	}
+	// initialize session
+
+	InitSession()
 	pingErr := DB.Ping()
 	if pingErr != nil {
 		log.Fatal(pingErr)
 	}
+
 	fmt.Println("Connected!")
 }

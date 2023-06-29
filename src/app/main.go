@@ -21,7 +21,7 @@ func main() {
 
 	util.ConnectDb()
 
-	// load and init controller
+	// load and init controllers
 	albumController := controllers.NewAlbumController()
 	userController := controllers.NewUserController()
 	controllers := []interfaces.ControllerInterface{
